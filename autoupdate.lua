@@ -23,9 +23,9 @@ local script_vers = 1
 local script_vers_text = "1.00"
 
 local update_url = "https://raw.githubusercontent.com/Hesooro/atools/main/update.ini"
-local update_path = getWorkingDirectory() .. "/update.ini"
+local update_path = getWorkingDirectory() .. "/atools/update.ini"
 
-local script_url = ""
+local script_url = "https://github.com/Hesooro/atools/raw/main/autoupdate.lua"
 local script_path = thisScript().path
 
 function main() 
@@ -37,11 +37,12 @@ function main()
 
  downloadUrlToFile(update_url, update_path, function(id, status)
     if status == dlstatus.STATUS_ENDDOWNLOADDATA then
-    updateIni = inicfg.load(nil, update_path)
+        updateIni = inicfg.load(nil, update_path)
         if tonumber(updateIni.info.vers) > script_vers then
         sampAddChatMessage("Есть обновление!! Версия: " .. updateIni.info.vers_text, green_color)
         update_state = true
         end
+        os.remove(update_path)
     end
 end)
 
@@ -51,10 +52,23 @@ end)
     sampAddChatMessage("Создана Mac East, приятной игры ", 0x00FFFF) 
     print("Good Luck")
 
+while true do
+    wait(0)
+if update_state then
+    downloadUrlToFile(script_url, script_path, function(id, status)
+        if status == dlstatus.STATUS_ENDDOWNLOADDATA then
+        sampAddChatMessage("Скрипт успешно обновлен", green_color)
+         thisScript():reload()
 
+        end
+    end)
+    break
+end
+
+end -- конец бесконечного цикла
 
 end
 
 function test(arg)
-    sampShowDialog(1000, "Обновление", "Учимся обновлять", "Закрыть", "", 0)
+    sampShowDialog(1000, "Обновление", "{FFFFFF}Научился обновлять\n{green_color}Новая версия" .. updateIni.info.vers_text, "Закрыть", "", 0)
 end
